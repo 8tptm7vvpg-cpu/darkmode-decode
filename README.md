@@ -1,4 +1,4 @@
-# DARKMODE DECODE — Version 2
+# DARKMODE DECODE — Version 3
 
 Open index.html in a modern browser. No install or build is required. All assets are local and the search works offline.
 
@@ -13,3 +13,4 @@ Version tracking uses whole numbers: Version 1, Version 2, Version 3. Update the
 Phase 2: authenticated editing, approved editor permissions, revision history, and review workflow. Version 2 does not store edits or include a sign-in system.
 
 Version 2 changes: mobile overflow repaired; vertical discipline modal; alphabetical default; animated gradients and card strokes; scroll reveals and ambient parallax; native fullscreen toggles with browser capability feedback. Fullscreen availability depends on the browser.
+Version 3 changes: the fullscreen help tip appears directly below the clicked fullscreen button, stays within the viewport on resize, uses an animated orange/yellow gradient with bold black text, and fades out after 10 seconds. Repeated clicks restart the timer. Fullscreen controls and the help message are unchanged.

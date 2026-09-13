@@ -1,4 +1,4 @@
-/* DARKMODE DECODE — Version 2. No external dependencies or services. */
+/* DARKMODE DECODE — Version 3. No external dependencies or services. */
 (() => {
 'use strict';
 const {terms,categories}=window.DECODE_DATA;
@@ -39,7 +39,7 @@ function readTerm(id){
 function route(){const id=new URLSearchParams(location.hash.slice(1)).get('term');if(id){hideIntro(false);if(terms.some(t=>t.id===id))readTerm(id);else{if(dialog.open)dialog.close();reset();$('#results-title').textContent='Entry not found';}}else if(dialog.open)dialog.close();}
 function goTerm(id){if(location.hash===`#term=${id}`)readTerm(id);else location.hash=`term=${id}`;}
 function clearRoute(){if(location.hash.startsWith('#term='))history.replaceState(null,'',location.pathname+location.search);}
-function hideIntro(focus=false){clearTimeout(introTimer);$('#intro').classList.add('done');$('#intro').inert=true;$('#app').inert=false;if(focus&&!dialog.open)search.focus({preventScroll:true});}
+function hideIntro(focus=false){clearTimeout(introTimer);$('#intro').classList.add('done');$('#intro').inert=true;$('#app').inert=false;positionFullscreenNotice();if(focus&&!dialog.open)search.focus({preventScroll:true});}
 function showIntro(){if(dialog.open)dialog.close();$('#app').inert=true;$('#intro').inert=false;$('#intro').classList.remove('done');document.querySelector('#intro .fullscreen').focus();introTimer=setTimeout(()=>hideIntro(),window.matchMedia('(prefers-reduced-motion: reduce)').matches?800:3400);}
 
 $('#search-form').onsubmit=e=>e.preventDefault();search.oninput=render;
@@ -59,8 +59,36 @@ menu.addEventListener('close',()=>$('#discipline-toggle').setAttribute('aria-exp
 // Fullscreen is only reported after the browser confirms the state.
 const expanded=()=>!!(document.fullscreenElement||document.webkitFullscreenElement);
 function syncFullscreen(){document.querySelectorAll('.fullscreen').forEach(button=>{const active=expanded();button.querySelector('span').textContent=active?'Exit Fullscreen':'Full Screen';button.setAttribute('aria-pressed',String(active));button.querySelector('path').setAttribute('d',active?'M3 8h5V3m8 0v5h5M8 21v-5H3m13 5v-5h5':'M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5');});}
-let fullscreenNoticeTimer;
-document.querySelectorAll('.fullscreen').forEach(button=>button.onclick=async()=>{try{if(expanded()){const leave=document.exitFullscreen||document.webkitExitFullscreen;await leave.call(document);}else{const enter=document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen;if(!enter)throw new Error('unsupported');await enter.call(document.documentElement);}syncFullscreen();}catch{const notice=$('#fullscreen-status');notice.textContent='Fullscreen is unavailable in this browser. On iPhone, use Safari → Share → Add to Home Screen for an app-style view.';notice.classList.add('visible');clearTimeout(fullscreenNoticeTimer);fullscreenNoticeTimer=setTimeout(()=>notice.classList.remove('visible'),9000);}});
+let fullscreenNoticeTimer,fullscreenNoticeAnchor;
+// Keep the tip below its triggering button, including across intro completion and rotation.
+function positionFullscreenNotice(){
+ const notice=$('#fullscreen-status');
+ if(!fullscreenNoticeAnchor||!notice.classList.contains('visible'))return;
+ if(fullscreenNoticeAnchor.closest('#intro')&&$('#intro').classList.contains('done'))fullscreenNoticeAnchor=document.querySelector('header .fullscreen');
+ const rect=fullscreenNoticeAnchor.getBoundingClientRect();
+ const viewport=window.visualViewport;
+ const leftEdge=viewport?viewport.offsetLeft:0,topEdge=viewport?viewport.offsetTop:0;
+ const width=viewport?viewport.width:window.innerWidth,height=viewport?viewport.height:window.innerHeight;
+ const tipWidth=Math.min(460,Math.max(0,width-28));
+ const left=Math.max(leftEdge+14,Math.min(rect.right-tipWidth,leftEdge+width-tipWidth-14));
+ const top=Math.max(topEdge+14,rect.bottom+12);
+ notice.style.width=`${tipWidth}px`;
+ notice.style.left=`${left}px`;
+ notice.style.top=`${top}px`;
+ notice.style.maxHeight=`${Math.max(0,topEdge+height-top-14)}px`;
+}
+function showFullscreenNotice(button){
+ const notice=$('#fullscreen-status');
+ fullscreenNoticeAnchor=button;
+ notice.textContent='Fullscreen is unavailable in this browser. On iPhone, use Safari → Share → Add to Home Screen for an app-style view.';
+ notice.classList.add('visible');
+ positionFullscreenNotice();
+ clearTimeout(fullscreenNoticeTimer);
+ fullscreenNoticeTimer=setTimeout(()=>notice.classList.remove('visible'),10000);
+}
+window.addEventListener('resize',positionFullscreenNotice);
+if(window.visualViewport){window.visualViewport.addEventListener('resize',positionFullscreenNotice);window.visualViewport.addEventListener('scroll',positionFullscreenNotice);}
+document.querySelectorAll('.fullscreen').forEach(button=>button.onclick=async()=>{try{if(expanded()){const leave=document.exitFullscreen||document.webkitExitFullscreen;await leave.call(document);}else{const enter=document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen;if(!enter)throw new Error('unsupported');await enter.call(document.documentElement);}syncFullscreen();}catch{showFullscreenNotice(button);}});
 document.addEventListener('fullscreenchange',syncFullscreen);document.addEventListener('webkitfullscreenchange',syncFullscreen);syncFullscreen();
 // Scroll-linked ambient light moves more slowly than content for subtle parallax.
 let scrollFrame=0;$('.workspace').addEventListener('scroll',()=>{if(reduceMotion.matches||scrollFrame)return;scrollFrame=requestAnimationFrame(()=>{$('.workspace').style.setProperty('--parallax',`${Math.min($('.workspace').scrollTop*.12,180)}px`);scrollFrame=0;});},{passive:true});
