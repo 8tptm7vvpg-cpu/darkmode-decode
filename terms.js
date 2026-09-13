@@ -1,6 +1,6 @@
 // DARKMODE DECODE terminology data. Edit records here; no build step required.
 window.DECODE_DATA = {
-  "version": 3,
+  "version": 4,
   "categories": [
     "Marketing & Strategy",
     "Advertising & Media",

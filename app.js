@@ -1,6 +1,13 @@
-/* DARKMODE DECODE — Version 3. No external dependencies or services. */
+/* DARKMODE DECODE — Version 4. No external dependencies or services. */
 (() => {
 'use strict';
+// A document can initialize only once; a tab/app session gets one cinematic intro.
+if(window.decodeInitialized)return;
+window.decodeInitialized=true;
+const INTRO_SESSION_KEY='darkmode-decode:intro-seen';
+let introPlayed=false,introDeadline=0;
+let introSeen=document.documentElement.classList.contains('intro-seen');
+try{introSeen=introSeen||sessionStorage.getItem(INTRO_SESSION_KEY)==='1';}catch{}
 const {terms,categories}=window.DECODE_DATA;
 const $=s=>document.querySelector(s), results=$('#results'), search=$('#search'), dialog=$('#detail');
 const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -40,7 +47,18 @@ function route(){const id=new URLSearchParams(location.hash.slice(1)).get('term'
 function goTerm(id){if(location.hash===`#term=${id}`)readTerm(id);else location.hash=`term=${id}`;}
 function clearRoute(){if(location.hash.startsWith('#term='))history.replaceState(null,'',location.pathname+location.search);}
 function hideIntro(focus=false){clearTimeout(introTimer);$('#intro').classList.add('done');$('#intro').inert=true;$('#app').inert=false;positionFullscreenNotice();if(focus&&!dialog.open)search.focus({preventScroll:true});}
-function showIntro(){if(dialog.open)dialog.close();$('#app').inert=true;$('#intro').inert=false;$('#intro').classList.remove('done');document.querySelector('#intro .fullscreen').focus();introTimer=setTimeout(()=>hideIntro(),window.matchMedia('(prefers-reduced-motion: reduce)').matches?800:3400);}
+function showIntro(){
+ if(introPlayed||introSeen){hideIntro();return;}
+ introPlayed=true;
+ // Record at the start, so a reload during the reveal cannot restart it.
+ try{sessionStorage.setItem(INTRO_SESSION_KEY,'1');}catch{}
+ if(dialog.open)dialog.close();
+ $('#app').inert=true;$('#intro').inert=false;$('#intro').classList.remove('done');
+ document.querySelector('#intro .fullscreen').focus();
+ const duration=reduceMotion.matches?800:3400;
+ introDeadline=Date.now()+duration;
+ introTimer=setTimeout(()=>hideIntro(),duration);
+}
 
 $('#search-form').onsubmit=e=>e.preventDefault();search.oninput=render;
 $('#clear').onclick=()=>{search.value='';render();search.focus();};$('#sort').onchange=render;
@@ -93,5 +111,13 @@ document.addEventListener('fullscreenchange',syncFullscreen);document.addEventLi
 // Scroll-linked ambient light moves more slowly than content for subtle parallax.
 let scrollFrame=0;$('.workspace').addEventListener('scroll',()=>{if(reduceMotion.matches||scrollFrame)return;scrollFrame=requestAnimationFrame(()=>{$('.workspace').style.setProperty('--parallax',`${Math.min($('.workspace').scrollTop*.12,180)}px`);scrollFrame=0;});},{passive:true});
 window.addEventListener('hashchange',route);
-drawCategories();render();if(location.hash.startsWith('#term='))route();else showIntro();
+// Cached page restoration and background timer throttling must not replay the reveal.
+window.addEventListener('pagehide',()=>hideIntro());
+window.addEventListener('pageshow',event=>{if(event.persisted)hideIntro();});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&introDeadline&&Date.now()>=introDeadline)hideIntro();});
+drawCategories();render();
+if(location.hash.startsWith('#term=')){
+ try{sessionStorage.setItem(INTRO_SESSION_KEY,'1');}catch{}
+ route();
+}else showIntro();
 })();
