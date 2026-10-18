@@ -1,4 +1,4 @@
-# DARKMODE DECODE — Version 6
+# DARKMODE DECODE — Version 7
 
 Open index.html in a modern browser. No install or build is required. All assets are local and the search works offline.
 
@@ -18,3 +18,4 @@ Version 3 changes: the fullscreen help tip appears directly below the clicked fu
 Version 4: cinematic intro runs once per tab/app session. Reloads and cached page restoration skip it; a new tab/session may play it again. Uses sessionStorage with a same-document fallback when storage is unavailable. No timed refresh or idle replay is configured.
 Version 5: supplied Decode artwork added as browser favicon (ICO plus PNG sizes) and 180px Apple touch icon. Upload favicon.ico and the entire icons folder alongside the existing files. Existing iPhone Home Screen shortcuts may need to be removed and added again to pick up the new icon. No application behavior changes.
 Version 6: bottom toolbar has a centered version label, right-aligned Refresh button, and Top button that scrolls the center workspace. Refresh reloads the page on demand while preserving the existing session intro guard. Narrow screens use two compact toolbar rows. Diagonal arrows use vector masks: black arrows on blue/green gradient tiles for dark cards, and gradient arrows on black tiles within gradient buttons. All favicon files remain included.
+Version 7: the bottom toolbar stays on one row at every breakpoint. Black vector icons replace text: list and search on the left, up and refresh on the right, with the version label centered. Accessible labels and title descriptions identify every icon. The website link uses a globe icon on desktop. Existing button actions are unchanged.

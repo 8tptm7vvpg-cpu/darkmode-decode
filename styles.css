@@ -46,20 +46,20 @@ html.intro-seen #intro{display:none!important}
 .action-arrow--dark::before{background:linear-gradient(110deg,#009dff,#35f7a0,#009dff);background-size:200% 100%;animation:gradient-flow 6s linear infinite}
 .suggestions button,.related button,.detail-actions button,.toolbar-domain{display:inline-flex;align-items:center;justify-content:center;gap:9px}
 .app-toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:16px;align-items:center;padding:12px 24px max(12px,env(safe-area-inset-bottom))}
-.toolbar-start,.toolbar-end{display:flex;align-items:center;gap:10px;min-width:0;flex-wrap:wrap}
+.toolbar-start,.toolbar-end{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:nowrap;grid-row:1}
 .toolbar-start{grid-column:1;justify-content:flex-start}
-.app-toolbar>.version{grid-column:2;justify-self:center;white-space:nowrap}
+.app-toolbar>.version{grid-column:2;grid-row:1;justify-self:center;white-space:nowrap}
 .toolbar-end{grid-column:3;justify-content:flex-end}
 .app-toolbar button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;font-weight:800;color:#000;white-space:nowrap}
-.app-toolbar .toolbar-domain{font-size:12px;white-space:nowrap}
+.app-toolbar .toolbar-icon{width:44px;height:44px;min-height:44px;flex:0 0 44px;padding:10px;gap:0}
+.toolbar-icon svg{width:22px;height:22px;display:block;fill:none;stroke:#000;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 .up-icon{width:18px;height:18px;fill:none;stroke:#000;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 @media(max-width:1200px){.app-toolbar .toolbar-domain{display:none}}
 @media(max-width:760px){
-  .app-toolbar{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;padding:8px 12px max(8px,env(safe-area-inset-bottom))}
-  .toolbar-start{grid-column:1/-1;grid-row:1;gap:8px;flex-wrap:nowrap}
-  .app-toolbar>.version{grid-column:2;grid-row:2}
-  .toolbar-end{grid-column:3;grid-row:2;flex-wrap:nowrap}
-  .app-toolbar button{padding:8px 10px;font-size:13px}
-  .app-toolbar kbd{display:none}
+  .app-toolbar{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);grid-template-rows:auto;gap:6px;padding:8px 8px max(8px,env(safe-area-inset-bottom))}
+  .toolbar-start{grid-column:1;grid-row:1;gap:6px}
+  .app-toolbar>.version{grid-column:2;grid-row:1}
+  .toolbar-end{grid-column:3;grid-row:1;gap:6px}
 }
+@media(max-width:340px){.app-toolbar .toolbar-icon{width:38px;flex-basis:38px;padding:8px}.toolbar-start,.toolbar-end{gap:4px}}
 @media(prefers-reduced-motion:reduce){.action-arrow,.action-arrow::before{animation:none!important}}

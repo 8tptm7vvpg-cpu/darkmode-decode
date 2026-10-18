@@ -1,4 +1,4 @@
-/* DARKMODE DECODE — Version 6. No external dependencies or services. */
+/* DARKMODE DECODE — Version 7. No external dependencies or services. */
 (() => {
 'use strict';
 // A document can initialize only once; a tab/app session gets one cinematic intro.
