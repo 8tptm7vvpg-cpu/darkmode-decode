@@ -1,4 +1,4 @@
-/* DARKMODE DECODE — Version 5. No external dependencies or services. */
+/* DARKMODE DECODE — Version 6. No external dependencies or services. */
 (() => {
 'use strict';
 // A document can initialize only once; a tab/app session gets one cinematic intro.
@@ -31,14 +31,14 @@ function render(){
  $('#results-title').textContent=search.value.trim()?'Search results':category===-1?'All terminology':categories[category];
  $('#count').textContent=`${found.length} ${found.length===1?'term':'terms'}`;
  $('#clear').hidden=!search.value;
- results.innerHTML=found.length?found.map(t=>`<button class="term-card" data-term="${t.id}" aria-label="Read ${escape(t.term)}${t.expansion?': '+escape(t.expansion):''}"><div class="card-top"><h3>${escape(t.term)}</h3><span class="arrow" aria-hidden="true">↗</span></div>${t.expansion?`<div class="expansion">${escape(t.expansion)}</div>`:''}<p>${escape(t.definition)}</p><div class="tags">${tagMarkup(t)}</div></button>`).join(''):`<div class="empty"><h3>No matching terms yet.</h3><p>Try a shorter phrase or search across all disciplines.</p><button id="reset-results">Reset search & filters</button></div>`;
+ results.innerHTML=found.length?found.map(t=>`<button class="term-card" data-term="${t.id}" aria-label="Read ${escape(t.term)}${t.expansion?': '+escape(t.expansion):''}"><div class="card-top"><h3>${escape(t.term)}</h3><span class="action-arrow" aria-hidden="true"></span></div>${t.expansion?`<div class="expansion">${escape(t.expansion)}</div>`:''}<p>${escape(t.definition)}</p><div class="tags">${tagMarkup(t)}</div></button>`).join(''):`<div class="empty"><h3>No matching terms yet.</h3><p>Try a shorter phrase or search across all disciplines.</p><button id="reset-results">Reset search & filters</button></div>`;
  watchCards();
 }
 function watchCards(){if(revealObserver&&!reduceMotion.matches)document.querySelectorAll('.term-card').forEach((card,i)=>{card.classList.add('reveal-card');card.style.setProperty('--reveal-delay',`${Math.min(i%3,2)*45}ms`);revealObserver.observe(card);});}
 function reset(){category=-1;$('#discipline-toggle span').textContent='All Disciplines';search.value='';$('#sort').value='az';drawCategories();render();$('.workspace').scrollTop=0;}
 function readTerm(id){
  const t=terms.find(t=>t.id===id);if(!t)return;selected=t;
- $('#detail-content').innerHTML=`<h2>${escape(t.term)}</h2>${t.expansion?`<div class="expansion">${escape(t.expansion)}</div>`:''}<div class="tags">${tagMarkup(t)}</div><h3>WHAT IT MEANS</h3><p>${escape(t.definition)}</p><h3>IN PRACTICE</h3><p>${escape(t.example)}</p>${t.confusion?`<h3>COMMON CONFUSION</h3><p>${escape(t.confusion)}</p>`:''}${t.related.length?`<h3>KEEP DECODING</h3><div class="related">${t.related.map(name=>terms.filter(x=>x.term===name).map(x=>`<button data-term="${x.id}">${escape(x.term)} ↗</button>`).join('')).join('')}</div>`:''}`;
+ $('#detail-content').innerHTML=`<h2>${escape(t.term)}</h2>${t.expansion?`<div class="expansion">${escape(t.expansion)}</div>`:''}<div class="tags">${tagMarkup(t)}</div><h3>WHAT IT MEANS</h3><p>${escape(t.definition)}</p><h3>IN PRACTICE</h3><p>${escape(t.example)}</p>${t.confusion?`<h3>COMMON CONFUSION</h3><p>${escape(t.confusion)}</p>`:''}${t.related.length?`<h3>KEEP DECODING</h3><div class="related">${t.related.map(name=>terms.filter(x=>x.term===name).map(x=>`<button data-term="${x.id}">${escape(x.term)} <span class="action-arrow action-arrow--dark" aria-hidden="true"></span></button>`).join('')).join('')}</div>`:''}`;
  $('#copy-status').textContent='';
  if(!dialog.open)dialog.showModal();
  dialog.scrollTop=0;
@@ -65,6 +65,9 @@ $('#clear').onclick=()=>{search.value='';render();search.focus();};$('#sort').on
 $('#categories').onclick=e=>{const b=e.target.closest('[data-category]');if(b){category=Number(b.dataset.category);drawCategories();render();$('.workspace').scrollTop=0;$('#discipline-toggle span').textContent=category===-1?'All Disciplines':categories[category];menu.close();}};
 $('#home').onclick=()=>{reset();$('#discipline-toggle span').textContent='All Disciplines';};
 $('#focus-search').onclick=()=>{search.focus();$('.workspace').scrollTop=0;};
+$('#back-top').onclick=()=>$('.workspace').scrollTo({top:0,behavior:reduceMotion.matches?'instant':'smooth'});
+// Refresh is explicit user action; the existing session guard skips the intro.
+$('#refresh-page').onclick=()=>window.location.reload();
  document.addEventListener('click',e=>{const t=e.target.closest('[data-term]');if(t)goTerm(t.dataset.term);const q=e.target.closest('[data-query]');if(q){category=-1;$('#discipline-toggle span').textContent='All Disciplines';search.value=q.dataset.query;drawCategories();render();search.focus();}if(e.target.closest('#reset-results'))reset();});
 $('#close-detail').onclick=()=>dialog.close();dialog.addEventListener('close',clearRoute);
 dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();}});
