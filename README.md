@@ -1,4 +1,4 @@
-# DARKMODE DECODE — Version 4
+# DARKMODE DECODE — Version 5
 
 Open index.html in a modern browser. No install or build is required. All assets are local and the search works offline.
 
@@ -16,3 +16,4 @@ Version 2 changes: mobile overflow repaired; vertical discipline modal; alphabet
 Version 3 changes: the fullscreen help tip appears directly below the clicked fullscreen button, stays within the viewport on resize, uses an animated orange/yellow gradient with bold black text, and fades out after 10 seconds. Repeated clicks restart the timer. Fullscreen controls and the help message are unchanged.
 
 Version 4: cinematic intro runs once per tab/app session. Reloads and cached page restoration skip it; a new tab/session may play it again. Uses sessionStorage with a same-document fallback when storage is unavailable. No timed refresh or idle replay is configured.
+Version 5: supplied Decode artwork added as browser favicon (ICO plus PNG sizes) and 180px Apple touch icon. Upload favicon.ico and the entire icons folder alongside the existing files. Existing iPhone Home Screen shortcuts may need to be removed and added again to pick up the new icon. No application behavior changes.
